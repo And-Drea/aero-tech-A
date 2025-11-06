@@ -12,7 +12,7 @@ export default function Navbar({ searchQuery, onSearchQueryChange, onSearch }) {
       <div className="nav-left">
 
         <Link to="/" className="app-name">
-            WeatherWindow
+            AeroTech
         </Link>
         
         <section className="search-container">
