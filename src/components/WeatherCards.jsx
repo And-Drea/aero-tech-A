@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 export default function WeatherCards({ location }) {
   // Component State Management
   const [weatherData, setWeatherData] = useState([]);
+  const [forecastDate, setForecastDate] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -29,6 +30,18 @@ export default function WeatherCards({ location }) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+
+        // Set the forecast date from the first timestamp in the response
+        if (data.hourly?.time?.length > 0) {
+          const date = new Date(data.hourly.time[0]);
+          setForecastDate(date.toLocaleDateString(undefined, {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric'
+          }));
+        } else {
+          setForecastDate('');
+        }
 
         // Transform API data into a structured format for the UI
         const transformedData = data.hourly.time.map((time, index) => {
@@ -73,7 +86,7 @@ export default function WeatherCards({ location }) {
             temp: `${Math.round(temp)}°`,
             icon: icon,
             condition: condition,
-            tasks: cardClass === 'unsuitable' ? 'Unavailable' : 'Create a task...',
+            tasks: [], // Initialize tasks as an empty array
             cardClass: cardClass,
           };
         });
@@ -96,6 +109,28 @@ export default function WeatherCards({ location }) {
     setFilters((prevFilters) => ({ ...prevFilters, [name]: checked }));
   };
 
+  // Handler for new task input changes
+  const handleTaskInputChange = (id, value) => {
+    setWeatherData(currentData =>
+      currentData.map(item =>
+        item.id === id ? { ...item, newTaskInput: value } : item
+      )
+    );
+  };
+
+  // Handler for adding a new task
+  const handleAddTask = (id) => {
+    setWeatherData(currentData =>
+      currentData.map(item => {
+        if (item.id === id && item.newTaskInput?.trim()) {
+          // Add the new task and clear the input field
+          return { ...item, tasks: [...item.tasks, item.newTaskInput], newTaskInput: '' };
+        }
+        return item;
+      })
+    );
+  };
+
   // Apply filters to the weather data before rendering
   const filteredWeatherData = weatherData.filter((weather) => filters[weather.cardClass]);
 
@@ -108,7 +143,7 @@ export default function WeatherCards({ location }) {
   return (
     <section className="weather-section" aria-labelledby="location-heading">
       <div className="location-header">
-        <h2 id="location-heading">{location?.name || 'Select a location'}</h2>
+        <h2 id="location-heading">{location?.name + ' - ' + forecastDate || 'Select a location'}</h2>
       </div>
 
       <div className="condition-filters">
@@ -158,11 +193,28 @@ export default function WeatherCards({ location }) {
             <p className="weather-time">{weather.time}</p>
             <p className="weather-temp">{weather.temp}</p>
             <section className="weather-tasks">
-              <h3 className="tasks-label">Tasks</h3>
-              <p className="tasks-content">{weather.tasks}</p>
+              <h3 className="tasks-label">Tasks ({weather.tasks.length})</h3>
+              {weather.cardClass === 'unsuitable' ? (
+                <p className="tasks-content">Unavailable</p>
+              ) : weather.tasks.length > 0 ? (
+                <ul className="tasks-list">
+                  {weather.tasks.map((task, index) => <li key={index}>{task}</li>)}
+                </ul>
+              ) : (
+                <p className="tasks-content">No tasks yet.</p>
+              )}
             </section>
             {weather.cardClass !== 'unsuitable' && (
-              <button className="create-task-button">Create Task</button>
+              <div className="create-task-container">
+                <input
+                  type="text"
+                  className="task-input"
+                  placeholder="Enter a new task..."
+                  value={weather.newTaskInput || ''}
+                  onChange={(e) => handleTaskInputChange(weather.id, e.target.value)}
+                />
+                <button className="create-task-button" onClick={() => handleAddTask(weather.id)}>Create Task</button>
+              </div>
             )}
           </article>
         )))}

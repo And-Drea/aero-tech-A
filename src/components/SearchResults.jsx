@@ -1,25 +1,25 @@
 export default function SearchResults({ results, onSelectLocation }) {
   if (!results || results.length === 0) {
     return (
-      <div className="search-results">
+      <section className="search-results">
         <h2 className="results-title">Search Results</h2>
         <p>No results found. Try another search.</p>
-      </div>
+      </section>
     );
   }
 
   return (
-    <div className="search-results">
+    <section className="search-results">
       <h2 className="results-title">Search Results</h2>
       {results.map((result) => (
-        <div key={result.id} className="result-item" onClick={() => onSelectLocation(result)} tabIndex="0" role="button">
+        <button key={result.id} className="result-item" onClick={() => onSelectLocation(result)}>
           <div className="result-icon">📍</div>
           <div className="result-info">
             <div className="result-location">{result.name}</div>
             <div className="result-country">{result.country}</div>
           </div>
-        </div>
+        </button>
       ))}
-    </div>
+    </section>
   );
 }

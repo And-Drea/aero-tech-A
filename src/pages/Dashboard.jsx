@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import SearchResults from '../components/SearchResults';
 import WeatherCards from '../components/WeatherCards';
+import Navbar from '../components/Navbar';
 
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,7 +25,7 @@ export default function Dashboard() {
       const data = await response.json();
       if (data.results) {
         setSearchResults(data.results);
-        // For now, let's automatically select the first result for the weather cards
+        // Automatically select the first result for the weather cards
         if (data.results.length > 0) {
           setLocation(data.results[0]);
         }
@@ -38,26 +39,17 @@ export default function Dashboard() {
   }, [searchQuery]);
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <span className="app-name">App Name</span>
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Search Location"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
-          />
-          <button onClick={handleSearch} className="search-button">🔍</button>
-        </div>
-        <button className="settings-button">⚙️</button>
-      </header>
+    <>
+      <Navbar
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
+        onSearch={handleSearch}
+      />
 
       <main className="main-content">
         <SearchResults results={searchResults} onSelectLocation={setLocation} />
         <WeatherCards location={location} />
       </main>
-    </div>
+    </>
   );
 }
