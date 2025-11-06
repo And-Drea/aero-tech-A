@@ -319,7 +319,7 @@ a {
 }
 
 .create-task-button {
-  width: max(125px, 100%);
+  width: 125px;
   padding: 8px;
   background: white;
   border: 1px solid #333;
@@ -333,7 +333,7 @@ a {
 }
 
 .task-input {
-  width: max(125px, 100%);
+  width: 125px;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
