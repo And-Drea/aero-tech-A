@@ -87,13 +87,16 @@ export default function WeatherCards({ location }) {
             }
           }
 
+          // Load tasks from localStorage
+          const storedTasks = localStorage.getItem(`tasks-${time}`);
+
           return {
             id: time,
             time: new Date(time).toLocaleTimeString([], { hour: 'numeric', hour12: true }),
             temp: `${Math.round(temp)}°`,
             icon: icon,
             condition: condition,
-            tasks: [], // Initialize tasks as an empty array
+            tasks: storedTasks ? JSON.parse(storedTasks) : [],
             cardClass: cardClass,
           };
         });
@@ -131,7 +134,9 @@ export default function WeatherCards({ location }) {
       currentData.map(item => {
         if (item.id === id && item.newTaskInput?.trim()) {
           // Add the new task and clear the input field
-          return { ...item, tasks: [...item.tasks, item.newTaskInput], newTaskInput: '' };
+          const updatedTasks = [...item.tasks, item.newTaskInput];
+          localStorage.setItem(`tasks-${id}`, JSON.stringify(updatedTasks));
+          return { ...item, tasks: updatedTasks, newTaskInput: '' };
         }
         return item;
       })
@@ -145,6 +150,7 @@ export default function WeatherCards({ location }) {
         if (item.id === id) {
           // Filter out the task by its index
           const updatedTasks = item.tasks.filter((_, index) => index !== taskIndex);
+          localStorage.setItem(`tasks-${id}`, JSON.stringify(updatedTasks));
           return { ...item, tasks: updatedTasks };
         }
         return item;
