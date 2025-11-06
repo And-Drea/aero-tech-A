@@ -74,7 +74,6 @@
   gap: 40px;
 }
 
-
 .logo-circle {
   /* reduced base size so the logo fits the home screen better */
   width: 260px;
@@ -122,7 +121,6 @@
     max-width: 320px;
   }
 }
-
 .app-info {
   max-width: 400px;
   text-align: center;
@@ -162,12 +160,6 @@
 
 .dark-mode .main-content {
   background-color: #1a1a1a;
-}
-
-.dark-mode .logo-circle {
-  background-color: #2d2d2d;
-  border-color: #555;
-  color: #fff;
 }
 
 .dark-mode .app-name {
